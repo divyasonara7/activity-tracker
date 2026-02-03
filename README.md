@@ -112,6 +112,4 @@ MIT
 
 ---
 
-## 🤝 Contributing
 
-Contributions are welcome! Please read the requirements.md for the full product vision.
