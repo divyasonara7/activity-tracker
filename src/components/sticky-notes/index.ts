@@ -1,1 +1,1 @@
-export { StickyNote, type StickyNoteProps } from './StickyNote';
+export { StickyNote } from './StickyNote';

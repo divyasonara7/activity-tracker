@@ -1,72 +1,93 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { cn } from '../../utils';
-import styles from './Button.module.css';
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-// ============================================
-// Button Component
-// ============================================
+const buttonVariants = cva(
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    {
+        variants: {
+            variant: {
+                default:
+                    "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 hover:scale-[1.02] active:scale-[0.98]",
+                destructive:
+                    "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] active:scale-[0.98]",
+                outline:
+                    "border border-border bg-transparent hover:bg-muted hover:border-muted-foreground/30 text-foreground",
+                secondary:
+                    "bg-muted text-foreground hover:bg-muted/80 hover:scale-[1.02] active:scale-[0.98]",
+                ghost:
+                    "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                link:
+                    "text-primary-400 underline-offset-4 hover:underline hover:text-primary-300",
+                success:
+                    "bg-gradient-to-r from-success-500 to-success-600 text-white shadow-lg shadow-success-500/25 hover:shadow-xl hover:shadow-success-500/30 hover:scale-[1.02] active:scale-[0.98]",
+                glow:
+                    "bg-gradient-to-r from-primary-500 via-primary-400 to-accent-500 text-white shadow-lg shadow-primary-500/40 hover:shadow-xl hover:shadow-primary-500/50 hover:scale-[1.02] active:scale-[0.98] animate-pulse",
+            },
+            size: {
+                default: "h-10 px-4 py-2",
+                sm: "h-8 rounded-md px-3 text-xs",
+                lg: "h-12 rounded-xl px-8 text-base",
+                xl: "h-14 rounded-xl px-10 text-lg",
+                icon: "h-10 w-10",
+            },
+        },
+        defaultVariants: {
+            variant: "default",
+            size: "default",
+        },
+    }
+);
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
-    size?: ButtonSize;
+export interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+    asChild?: boolean;
     isLoading?: boolean;
-    leftIcon?: ReactNode;
-    rightIcon?: ReactNode;
-    fullWidth?: boolean;
-    children: ReactNode;
 }
 
-export function Button({
-    variant = 'primary',
-    size = 'md',
-    isLoading = false,
-    leftIcon,
-    rightIcon,
-    fullWidth = false,
-    className,
-    disabled,
-    children,
-    ...props
-}: ButtonProps) {
-    return (
-        <button
-            className={cn(
-                styles.button,
-                styles[variant],
-                styles[size],
-                fullWidth && styles.fullWidth,
-                isLoading && styles.loading,
-                className
-            )}
-            disabled={disabled || isLoading}
-            {...props}
-        >
-            {isLoading && (
-                <span className={styles.spinner} aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeDasharray="32"
-                            strokeDashoffset="12"
-                        />
-                    </svg>
-                </span>
-            )}
-            {!isLoading && leftIcon && (
-                <span className={styles.icon}>{leftIcon}</span>
-            )}
-            <span className={styles.label}>{children}</span>
-            {!isLoading && rightIcon && (
-                <span className={styles.icon}>{rightIcon}</span>
-            )}
-        </button>
-    );
-}
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ className, variant, size, asChild = false, isLoading, children, disabled, ...props }, ref) => {
+        const Comp = asChild ? Slot : "button";
+        return (
+            <Comp
+                className={cn(buttonVariants({ variant, size, className }))}
+                ref={ref}
+                disabled={disabled || isLoading}
+                {...props}
+            >
+                {isLoading ? (
+                    <>
+                        <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                            />
+                            <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                        </svg>
+                        Loading...
+                    </>
+                ) : (
+                    children
+                )}
+            </Comp>
+        );
+    }
+);
+Button.displayName = "Button";
+
+export { Button, buttonVariants };

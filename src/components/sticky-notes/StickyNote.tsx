@@ -1,127 +1,141 @@
-import type { Entry } from '../../types';
-import { cn, truncate } from '../../utils';
-import { getStickyColor, getCategoryEmoji, getMoodEmoji } from '../../utils/constants';
-import { formatShortDate } from '../../utils/dates';
-import styles from './StickyNote.module.css';
+import { cn } from "@/lib/utils";
+import type { Entry } from "@/types";
+import { getCategoryEmoji, getMoodEmoji } from "@/utils/constants";
+import { Pin, Archive } from "lucide-react";
 
-// ============================================
-// Sticky Note Component
-// ============================================
-
-export interface StickyNoteProps {
+interface StickyNoteProps {
     entry: Entry;
     onClick?: () => void;
     onPin?: () => void;
     onArchive?: () => void;
-    size?: 'sm' | 'md' | 'lg';
-    showDate?: boolean;
+    index?: number;
 }
 
-export function StickyNote({
-    entry,
-    onClick,
-    onPin,
-    onArchive,
-    size = 'md',
-    showDate = false,
-}: StickyNoteProps) {
-    const colors = getStickyColor(entry.category);
-    const categoryEmoji = getCategoryEmoji(entry.category);
-    const moodEmoji = getMoodEmoji(entry.mood);
+const CATEGORY_COLORS: Record<string, string> = {
+    "learning-technology": "from-indigo-500/20 to-indigo-600/10 border-indigo-500/40",
+    "learning-finance": "from-amber-500/20 to-amber-600/10 border-amber-500/40",
+    "learning-other": "from-purple-500/20 to-purple-600/10 border-purple-500/40",
+    "exercise": "from-emerald-500/20 to-emerald-600/10 border-emerald-500/40",
+    "motivation": "from-orange-500/20 to-orange-600/10 border-orange-500/40",
+    "reflection": "from-pink-500/20 to-pink-600/10 border-pink-500/40",
+};
 
-    // Random slight rotation for sticky note effect
-    const rotation = ((entry.id.charCodeAt(0) % 7) - 3) * 0.5;
+const CATEGORY_ACCENT: Record<string, string> = {
+    "learning-technology": "bg-indigo-500",
+    "learning-finance": "bg-amber-500",
+    "learning-other": "bg-purple-500",
+    "exercise": "bg-emerald-500",
+    "motivation": "bg-orange-500",
+    "reflection": "bg-pink-500",
+};
 
-    const contentLength = size === 'sm' ? 60 : size === 'md' ? 120 : 200;
+export function StickyNote({ entry, onClick, onPin, onArchive, index = 0 }: StickyNoteProps) {
+    const colorClass = CATEGORY_COLORS[entry.category] || CATEGORY_COLORS["learning-technology"];
+    const accentClass = CATEGORY_ACCENT[entry.category] || CATEGORY_ACCENT["learning-technology"];
+
+    // Slight random rotation for organic feel
+    const rotation = ((entry.id.charCodeAt(0) % 5) - 2) * 0.8;
 
     return (
         <article
+            onClick={onClick}
             className={cn(
-                styles.stickyNote,
-                styles[size],
-                entry.isPinned && styles.pinned,
-                onClick && styles.clickable
+                "group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 cursor-pointer",
+                "transition-all duration-300 ease-out",
+                "hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary-500/10",
+                "hover:-translate-y-1",
+                "animate-slide-up",
+                colorClass
             )}
             style={{
-                '--sticky-bg': colors.background,
-                '--sticky-border': colors.border,
-                '--sticky-text': colors.text,
-                '--rotation': `${rotation}deg`,
-            } as React.CSSProperties}
-            onClick={onClick}
-            role={onClick ? 'button' : undefined}
-            tabIndex={onClick ? 0 : undefined}
+                transform: `rotate(${rotation}deg)`,
+                animationDelay: `${index * 80}ms`,
+            }}
+            role="button"
+            tabIndex={0}
             onKeyDown={(e) => {
-                if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+                if (onClick && (e.key === "Enter" || e.key === " ")) {
                     e.preventDefault();
                     onClick();
                 }
             }}
         >
+            {/* Accent bar */}
+            <div className={cn("absolute top-0 left-0 right-0 h-1", accentClass)} />
+
             {/* Pin indicator */}
             {entry.isPinned && (
-                <div className={styles.pinIcon} aria-label="Pinned">
-                    📌
+                <div className="absolute -top-1 -right-1 p-2">
+                    <Pin className="w-4 h-4 text-primary-400 fill-primary-400 rotate-45" />
                 </div>
             )}
 
             {/* Header */}
-            <div className={styles.header}>
-                <span className={styles.category}>{categoryEmoji}</span>
-                <span className={styles.mood}>{moodEmoji}</span>
-            </div>
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                    <span className="text-2xl">{getCategoryEmoji(entry.category)}</span>
+                    <span className="text-lg">{getMoodEmoji(entry.mood)}</span>
+                </div>
 
-            {/* Title */}
-            {entry.title && <h3 className={styles.title}>{entry.title}</h3>}
-
-            {/* Content */}
-            <p className={styles.content}>{truncate(entry.content, contentLength)}</p>
-
-            {/* Footer */}
-            <div className={styles.footer}>
-                {showDate && (
-                    <span className={styles.date}>{formatShortDate(entry.date)}</span>
-                )}
-                {entry.tags.length > 0 && (
-                    <div className={styles.tags}>
-                        {entry.tags.slice(0, 2).map((tag) => (
-                            <span key={tag} className={styles.tag}>
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Actions */}
-            {(onPin || onArchive) && (
-                <div className={styles.actions}>
+                {/* Quick actions */}
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {onPin && (
                         <button
-                            type="button"
-                            className={styles.actionBtn}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onPin();
                             }}
-                            aria-label={entry.isPinned ? 'Unpin' : 'Pin'}
+                            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                            aria-label={entry.isPinned ? "Unpin" : "Pin"}
                         >
-                            {entry.isPinned ? '📍' : '📌'}
+                            <Pin className={cn("w-4 h-4", entry.isPinned && "fill-current text-primary-400")} />
                         </button>
                     )}
                     {onArchive && (
                         <button
-                            type="button"
-                            className={styles.actionBtn}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onArchive();
                             }}
+                            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
                             aria-label="Archive"
                         >
-                            🗃️
+                            <Archive className="w-4 h-4" />
                         </button>
                     )}
+                </div>
+            </div>
+
+            {/* Title */}
+            {entry.title && (
+                <h3 className="font-semibold text-foreground mb-2 line-clamp-1">
+                    {entry.title}
+                </h3>
+            )}
+
+            {/* Content */}
+            <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                {entry.content}
+            </p>
+
+            {/* Tags */}
+            {entry.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                    {entry.tags.slice(0, 3).map((tag) => (
+                        <span
+                            key={tag}
+                            className="px-2 py-0.5 text-xs rounded-full bg-white/10 text-muted-foreground"
+                        >
+                            #{tag}
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* Mood fire glow for "fire" mood */}
+            {entry.mood === "fire" && (
+                <div className="absolute -bottom-4 -right-4 text-4xl fire-glow opacity-50">
+                    🔥
                 </div>
             )}
         </article>

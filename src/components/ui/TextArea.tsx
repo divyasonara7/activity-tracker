@@ -1,40 +1,23 @@
-import { forwardRef, type TextareaHTMLAttributes } from 'react';
-import { cn } from '../../utils';
-import styles from './TextArea.module.css';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-// ============================================
-// TextArea Component
-// ============================================
+export interface TextareaProps
+    extends React.TextareaHTMLAttributes<HTMLTextAreaElement> { }
 
-export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-    label?: string;
-    error?: string;
-    hint?: string;
-}
-
-export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-    function TextArea({ label, error, hint, className, id, ...props }, ref) {
-        const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-');
-
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+    ({ className, ...props }, ref) => {
         return (
-            <div className={styles.wrapper}>
-                {label && (
-                    <label htmlFor={textareaId} className={styles.label}>
-                        {label}
-                    </label>
+            <textarea
+                className={cn(
+                    "flex min-h-[100px] w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:border-primary-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none",
+                    className
                 )}
-                <textarea
-                    ref={ref}
-                    id={textareaId}
-                    className={cn(styles.textarea, error && styles.hasError, className)}
-                    {...props}
-                />
-                {(error || hint) && (
-                    <p className={cn(styles.helper, error && styles.errorText)}>
-                        {error || hint}
-                    </p>
-                )}
-            </div>
+                ref={ref}
+                {...props}
+            />
         );
     }
 );
+Textarea.displayName = "Textarea";
+
+export { Textarea };

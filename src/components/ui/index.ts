@@ -1,5 +1,16 @@
-export { Button, type ButtonProps } from './Button';
-export { Card, CardHeader, CardContent, CardFooter, type CardProps } from './Card';
-export { Input, type InputProps } from './Input';
-export { TextArea, type TextAreaProps } from './TextArea';
-export { Modal, type ModalProps } from './Modal';
+export { Button, buttonVariants } from './Button';
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+export {
+    Dialog,
+    DialogPortal,
+    DialogOverlay,
+    DialogClose,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+} from './Dialog';
+export { Progress } from './Progress';
+export { Textarea } from './TextArea';

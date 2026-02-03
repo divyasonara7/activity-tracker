@@ -1,94 +1,226 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import './tokens.css';
+@import "tailwindcss";
 
 /* ============================================
-   Global Styles
+   Premium Design System for Daily Growth Tracker
+   Dark-first, engaging, motivational design
    ============================================ */
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+@theme {
+    /* Primary - Vibrant Indigo/Purple gradient */
+    --color-primary-50: #eef2ff;
+    --color-primary-100: #e0e7ff;
+    --color-primary-200: #c7d2fe;
+    --color-primary-300: #a5b4fc;
+    --color-primary-400: #818cf8;
+    --color-primary-500: #6366f1;
+    --color-primary-600: #4f46e5;
+    --color-primary-700: #4338ca;
+    --color-primary-800: #3730a3;
+    --color-primary-900: #312e81;
+
+    /* Accent - Energetic Orange/Amber for streaks */
+    --color-accent-400: #fb923c;
+    --color-accent-500: #f97316;
+    --color-accent-600: #ea580c;
+
+    /* Success - Fresh Green for achievements */
+    --color-success-400: #4ade80;
+    --color-success-500: #22c55e;
+    --color-success-600: #16a34a;
+
+    /* Category Colors - Vibrant & Distinct */
+    --color-learning: #818cf8;
+    --color-exercise: #34d399;
+    --color-motivation: #fbbf24;
+    --color-reflection: #f472b6;
+
+    /* Mood Colors */
+    --color-mood-fire: #ef4444;
+    --color-mood-happy: #22c55e;
+    --color-mood-neutral: #94a3b8;
+    --color-mood-sad: #6366f1;
+
+    /* Dark Theme (Default) */
+    --color-background: #09090b;
+    --color-foreground: #fafafa;
+    --color-card: #18181b;
+    --color-card-foreground: #fafafa;
+    --color-popover: #18181b;
+    --color-popover-foreground: #fafafa;
+    --color-muted: #27272a;
+    --color-muted-foreground: #a1a1aa;
+    --color-border: #27272a;
+    --color-input: #27272a;
+    --color-ring: #6366f1;
+
+    /* Radius */
+    --radius-lg: 0.75rem;
+    --radius-md: 0.5rem;
+    --radius-sm: 0.25rem;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+    @apply border-border;
 }
 
 html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+    @apply scroll-smooth;
 }
 
 body {
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
-    line-height: var(--leading-normal);
-    color: rgb(var(--text-primary));
-    background-color: rgb(var(--surface-bg));
-    min-height: 100vh;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ============================================
-   Typography Base
+   Custom Utility Classes
    ============================================ */
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-weight: var(--font-semibold);
-    line-height: var(--leading-tight);
-    color: rgb(var(--text-primary));
+.gradient-primary {
+    @apply bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700;
 }
 
-h1 {
-    font-size: var(--text-4xl);
+.gradient-accent {
+    @apply bg-gradient-to-r from-accent-400 to-accent-600;
 }
 
-h2 {
-    font-size: var(--text-3xl);
+.gradient-success {
+    @apply bg-gradient-to-r from-success-400 to-success-600;
 }
 
-h3 {
-    font-size: var(--text-2xl);
+.glass {
+    @apply bg-card/80 backdrop-blur-lg border border-border/50;
 }
 
-h4 {
-    font-size: var(--text-xl);
+.glass-hover {
+    @apply hover:bg-card/90 hover:border-border transition-all duration-200;
 }
 
-h5 {
-    font-size: var(--text-lg);
+/* Streak fire glow effect */
+.fire-glow {
+    filter: drop-shadow(0 0 8px rgb(239 68 68 / 0.5));
+    animation: pulse-fire 2s ease-in-out infinite;
 }
 
-h6 {
-    font-size: var(--text-base);
+@keyframes pulse-fire {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 8px rgb(239 68 68 / 0.5));
+        transform: scale(1);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 16px rgb(251 146 60 / 0.7));
+        transform: scale(1.1);
+    }
 }
 
-p {
-    color: rgb(var(--text-secondary));
+/* Celebration confetti animation */
+@keyframes confetti {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
 }
 
-a {
-    color: rgb(var(--color-learning-technology));
-    text-decoration: none;
-    transition: color var(--transition-fast);
+.animate-confetti {
+    animation: confetti 3s ease-out forwards;
 }
 
-a:hover {
-    text-decoration: underline;
+/* Floating animation for cards */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Slide up animation */
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+}
+
+/* Scale in animation */
+@keyframes scale-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Progress ring animation */
+@keyframes progress-ring {
+    0% {
+        stroke-dashoffset: 283;
+    }
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg,
+            rgb(39 39 42) 25%,
+            rgb(63 63 70) 50%,
+            rgb(39 39 42) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
 
 /* ============================================
-   Focus States (Accessibility)
+   Focus States
    ============================================ */
 
-:focus-visible {
-    outline: 2px solid rgb(var(--border-accent));
-    outline-offset: 2px;
+*:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-background;
 }
 
 /* ============================================
@@ -101,186 +233,13 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgb(var(--surface-muted));
-    border-radius: var(--radius-full);
+    @apply bg-muted rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgb(var(--text-muted));
-    border-radius: var(--radius-full);
+    @apply bg-muted-foreground/30 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--text-secondary));
-}
-
-/* ============================================
-   Selection
-   ============================================ */
-
-::selection {
-    background: rgb(var(--color-learning-technology) / 0.2);
-    color: rgb(var(--text-primary));
-}
-
-/* ============================================
-   Utility Classes
-   ============================================ */
-
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 var(--space-4);
-}
-
-@media (min-width: 640px) {
-    .container {
-        padding: 0 var(--space-6);
-    }
-}
-
-@media (min-width: 1024px) {
-    .container {
-        padding: 0 var(--space-8);
-    }
-}
-
-/* ============================================
-   Animation Keyframes
-   ============================================ */
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-}
-
-@keyframes shake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    25% {
-        transform: translateX(-4px);
-    }
-
-    75% {
-        transform: translateX(4px);
-    }
-}
-
-@keyframes wiggle {
-
-    0%,
-    100% {
-        transform: rotate(-1deg);
-    }
-
-    50% {
-        transform: rotate(1deg);
-    }
-}
-
-/* Animation utilities */
-.animate-fade-in {
-    animation: fadeIn var(--transition-base) ease-out;
-}
-
-.animate-slide-up {
-    animation: slideUp var(--transition-base) ease-out;
-}
-
-.animate-slide-down {
-    animation: slideDown var(--transition-base) ease-out;
-}
-
-.animate-scale-in {
-    animation: scaleIn var(--transition-spring);
-}
-
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* ============================================
-   App Layout
-   ============================================ */
-
-#root {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.app-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    @apply bg-muted-foreground/50;
 }
