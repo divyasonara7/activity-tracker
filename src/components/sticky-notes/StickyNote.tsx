@@ -1,56 +1,61 @@
 import { cn } from "@/lib/utils";
 import type { Entry } from "@/types";
 import { getCategoryEmoji, getMoodEmoji } from "@/utils/constants";
-import { Pin, Archive } from "lucide-react";
+import { Check } from "lucide-react";
 
-interface StickyNoteProps {
+interface HabitCardProps {
     entry: Entry;
     onClick?: () => void;
-    onPin?: () => void;
-    onArchive?: () => void;
+    onToggle?: () => void;
     index?: number;
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-    "learning-technology": "from-indigo-500/20 to-indigo-600/10 border-indigo-500/40",
-    "learning-finance": "from-amber-500/20 to-amber-600/10 border-amber-500/40",
-    "learning-other": "from-purple-500/20 to-purple-600/10 border-purple-500/40",
-    "exercise": "from-emerald-500/20 to-emerald-600/10 border-emerald-500/40",
-    "motivation": "from-orange-500/20 to-orange-600/10 border-orange-500/40",
-    "reflection": "from-pink-500/20 to-pink-600/10 border-pink-500/40",
+// Habitify uses vibrant colors for each habit
+const HABIT_COLORS: Record<string, { bg: string; text: string; ring: string }> = {
+    "learning-technology": {
+        bg: "bg-habit-blue/20",
+        text: "text-habit-blue",
+        ring: "ring-habit-blue",
+    },
+    "learning-finance": {
+        bg: "bg-habit-yellow/20",
+        text: "text-habit-yellow",
+        ring: "ring-habit-yellow",
+    },
+    "learning-other": {
+        bg: "bg-habit-purple/20",
+        text: "text-habit-purple",
+        ring: "ring-habit-purple",
+    },
+    "exercise": {
+        bg: "bg-habit-green/20",
+        text: "text-habit-green",
+        ring: "ring-habit-green",
+    },
+    "motivation": {
+        bg: "bg-habit-orange/20",
+        text: "text-habit-orange",
+        ring: "ring-habit-orange",
+    },
+    "reflection": {
+        bg: "bg-habit-pink/20",
+        text: "text-habit-pink",
+        ring: "ring-habit-pink",
+    },
 };
 
-const CATEGORY_ACCENT: Record<string, string> = {
-    "learning-technology": "bg-indigo-500",
-    "learning-finance": "bg-amber-500",
-    "learning-other": "bg-purple-500",
-    "exercise": "bg-emerald-500",
-    "motivation": "bg-orange-500",
-    "reflection": "bg-pink-500",
-};
-
-export function StickyNote({ entry, onClick, onPin, onArchive, index = 0 }: StickyNoteProps) {
-    const colorClass = CATEGORY_COLORS[entry.category] || CATEGORY_COLORS["learning-technology"];
-    const accentClass = CATEGORY_ACCENT[entry.category] || CATEGORY_ACCENT["learning-technology"];
-
-    // Slight random rotation for organic feel
-    const rotation = ((entry.id.charCodeAt(0) % 5) - 2) * 0.8;
+export function HabitCard({ entry, onClick, onToggle, index = 0 }: HabitCardProps) {
+    const colors = HABIT_COLORS[entry.category] || HABIT_COLORS["learning-technology"];
+    const isCompleted = true; // All entries are "completed" since they exist
 
     return (
-        <article
-            onClick={onClick}
+        <div
             className={cn(
-                "group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 cursor-pointer",
-                "transition-all duration-300 ease-out",
-                "hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary-500/10",
-                "hover:-translate-y-1",
-                "animate-slide-up",
-                colorClass
+                "habit-card flex items-center gap-4 cursor-pointer animate-fade-up",
+                isCompleted && "habit-card-completed"
             )}
-            style={{
-                transform: `rotate(${rotation}deg)`,
-                animationDelay: `${index * 80}ms`,
-            }}
+            style={{ animationDelay: `${index * 50}ms` }}
+            onClick={onClick}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -60,84 +65,50 @@ export function StickyNote({ entry, onClick, onPin, onArchive, index = 0 }: Stic
                 }
             }}
         >
-            {/* Accent bar */}
-            <div className={cn("absolute top-0 left-0 right-0 h-1", accentClass)} />
+            {/* Color indicator / Check circle */}
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle?.();
+                }}
+                className={cn(
+                    "flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
+                    "transition-all duration-200",
+                    isCompleted
+                        ? "bg-success text-white"
+                        : cn(colors.bg, colors.text, "ring-2", colors.ring)
+                )}
+            >
+                {isCompleted ? (
+                    <Check className="w-5 h-5 animate-check" />
+                ) : (
+                    <span className="text-lg">{getCategoryEmoji(entry.category)}</span>
+                )}
+            </button>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                    <span className="text-lg">{getCategoryEmoji(entry.category)}</span>
+                    {entry.title && (
+                        <h3 className="font-medium text-foreground truncate">
+                            {entry.title}
+                        </h3>
+                    )}
+                    <span className="text-sm">{getMoodEmoji(entry.mood)}</span>
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
+                    {entry.content}
+                </p>
+            </div>
 
             {/* Pin indicator */}
             {entry.isPinned && (
-                <div className="absolute -top-1 -right-1 p-2">
-                    <Pin className="w-4 h-4 text-primary-400 fill-primary-400 rotate-45" />
-                </div>
+                <span className="text-primary-400">📌</span>
             )}
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <span className="text-2xl">{getCategoryEmoji(entry.category)}</span>
-                    <span className="text-lg">{getMoodEmoji(entry.mood)}</span>
-                </div>
-
-                {/* Quick actions */}
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {onPin && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onPin();
-                            }}
-                            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                            aria-label={entry.isPinned ? "Unpin" : "Pin"}
-                        >
-                            <Pin className={cn("w-4 h-4", entry.isPinned && "fill-current text-primary-400")} />
-                        </button>
-                    )}
-                    {onArchive && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onArchive();
-                            }}
-                            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                            aria-label="Archive"
-                        >
-                            <Archive className="w-4 h-4" />
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Title */}
-            {entry.title && (
-                <h3 className="font-semibold text-foreground mb-2 line-clamp-1">
-                    {entry.title}
-                </h3>
-            )}
-
-            {/* Content */}
-            <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                {entry.content}
-            </p>
-
-            {/* Tags */}
-            {entry.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                    {entry.tags.slice(0, 3).map((tag) => (
-                        <span
-                            key={tag}
-                            className="px-2 py-0.5 text-xs rounded-full bg-white/10 text-muted-foreground"
-                        >
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
-            )}
-
-            {/* Mood fire glow for "fire" mood */}
-            {entry.mood === "fire" && (
-                <div className="absolute -bottom-4 -right-4 text-4xl fire-glow opacity-50">
-                    🔥
-                </div>
-            )}
-        </article>
+        </div>
     );
 }
+
+// Re-export as EntryCard for compatibility
+export { HabitCard as EntryCard };

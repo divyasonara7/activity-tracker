@@ -1,1 +1,1 @@
-export { StickyNote } from './StickyNote';
+export { HabitCard, EntryCard } from './StickyNote';

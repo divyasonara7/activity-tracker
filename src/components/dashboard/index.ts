@@ -1,1 +1,1 @@
-export { StreakCard, StreakBadge } from './StreakCard';
+export { ProgressRing, StreakCounter, DailyProgress } from './StreakCard';

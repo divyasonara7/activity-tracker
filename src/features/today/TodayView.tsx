@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Textarea } from "@/components/ui";
-import { StickyNote } from "@/components/sticky-notes";
-import { StreakCard, StreakBadge } from "@/components/dashboard";
+import { HabitCard } from "@/components/sticky-notes/StickyNote";
+import { DailyProgress, StreakCounter } from "@/components/dashboard/StreakCard";
 import { getRelativeDay } from "@/utils/dates";
 import { CATEGORY_CONFIG, MOOD_CONFIG } from "@/utils/constants";
 import type { EntryCategory, Mood } from "@/types";
-import { Plus, Sparkles, Target, Zap } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ============================================
-// Today View - Premium Redesign
+// Today View - Habitify Style
 // ============================================
 
 const CATEGORIES: EntryCategory[] = [
@@ -23,6 +23,16 @@ const CATEGORIES: EntryCategory[] = [
 ];
 
 const MOODS: Mood[] = ["fire", "happy", "neutral", "sad"];
+
+// Category color mapping for Habitify-style
+const CATEGORY_COLORS: Record<string, string> = {
+    "learning-technology": "bg-habit-blue",
+    "learning-finance": "bg-habit-yellow",
+    "learning-other": "bg-habit-purple",
+    "exercise": "bg-habit-green",
+    "motivation": "bg-habit-orange",
+    "reflection": "bg-habit-pink",
+};
 
 export function TodayView() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -38,7 +48,6 @@ export function TodayView() {
         isLoading,
         addEntry,
         togglePin,
-        toggleArchive,
         loadTodayEntries,
     } = useAppStore();
 
@@ -48,11 +57,9 @@ export function TodayView() {
 
     const overallStreak = streaks.find((s) => s.type === "overall");
     const currentStreakCount = overallStreak?.currentCount || 0;
-    const longestStreakCount = overallStreak?.longestCount || 0;
 
     const handleSubmit = async () => {
         if (!content.trim()) return;
-
         setIsSubmitting(true);
         try {
             await addEntry({
@@ -72,136 +79,96 @@ export function TodayView() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-                <div className="w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
-                <p className="text-muted-foreground">Loading your growth journey...</p>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+                <div className="w-10 h-10 border-3 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+                <p className="text-muted-foreground">Loading habits...</p>
             </div>
         );
     }
 
     const visibleEntries = todayEntries.filter((e) => !e.isArchived);
-    const pinnedEntries = visibleEntries.filter((e) => e.isPinned);
-    const regularEntries = visibleEntries.filter((e) => !e.isPinned);
 
     return (
-        <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
-            {/* Hero Header */}
-            <header className="space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="space-y-1">
-                        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+        <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6">
+            {/* Header */}
+            <header className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-foreground">
                             {getRelativeDay(new Date())}
                         </h1>
-                        <p className="text-muted-foreground">
-                            {visibleEntries.length === 0
-                                ? "Start capturing your growth journey ✨"
-                                : `${visibleEntries.length} ${visibleEntries.length === 1 ? "entry" : "entries"} logged`}
+                        <p className="text-sm text-muted-foreground">
+                            Track your daily progress
                         </p>
                     </div>
-
-                    <StreakBadge count={currentStreakCount} />
+                    <StreakCounter count={currentStreakCount} size="lg" />
                 </div>
 
-                {/* Streak Card */}
-                {(currentStreakCount > 0 || longestStreakCount > 0) && (
-                    <StreakCard
-                        currentStreak={currentStreakCount}
-                        longestStreak={longestStreakCount}
-                    />
-                )}
+                {/* Daily Progress */}
+                <DailyProgress
+                    completed={visibleEntries.length}
+                    total={Math.max(visibleEntries.length, 5)} // Target 5 habits/day
+                    streak={currentStreakCount}
+                />
             </header>
 
-            {/* Quick Add Button */}
+            {/* Add Entry Button */}
             <Button
-                size="xl"
-                className="w-full group"
+                variant="default"
+                size="lg"
+                className="w-full"
                 onClick={() => setIsFormOpen(true)}
             >
-                <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />
-                <span>Add Entry</span>
-                <Sparkles className="w-4 h-4 ml-1 opacity-60" />
+                <Plus className="w-5 h-5" />
+                <span>Add New Entry</span>
             </Button>
 
-            {/* Entries Grid */}
-            <div className="space-y-6">
-                {pinnedEntries.length > 0 && (
-                    <section className="space-y-4">
-                        <h2 className="text-lg font-semibold flex items-center gap-2">
-                            <span>📌 Pinned</span>
+            {/* Entries List */}
+            <div className="space-y-3">
+                {visibleEntries.length > 0 ? (
+                    <>
+                        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                            Today's Entries
                         </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {pinnedEntries.map((entry, index) => (
-                                <StickyNote
-                                    key={entry.id}
-                                    entry={entry}
-                                    index={index}
-                                    onClick={() => setSelectedEntry(entry.id)}
-                                    onPin={() => togglePin(entry.id)}
-                                    onArchive={() => toggleArchive(entry.id)}
-                                />
-                            ))}
+                        {visibleEntries.map((entry, index) => (
+                            <HabitCard
+                                key={entry.id}
+                                entry={entry}
+                                index={index}
+                                onClick={() => setSelectedEntry(entry.id)}
+                                onToggle={() => togglePin(entry.id)}
+                            />
+                        ))}
+                    </>
+                ) : (
+                    <div className="text-center py-12 space-y-4">
+                        <div className="w-20 h-20 mx-auto bg-card rounded-2xl flex items-center justify-center">
+                            <Sparkles className="w-10 h-10 text-primary-400" />
                         </div>
-                    </section>
-                )}
-
-                {regularEntries.length > 0 && (
-                    <section className="space-y-4">
-                        {pinnedEntries.length > 0 && (
-                            <h2 className="text-lg font-semibold">Today's Notes</h2>
-                        )}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {regularEntries.map((entry, index) => (
-                                <StickyNote
-                                    key={entry.id}
-                                    entry={entry}
-                                    index={index}
-                                    onClick={() => setSelectedEntry(entry.id)}
-                                    onPin={() => togglePin(entry.id)}
-                                    onArchive={() => toggleArchive(entry.id)}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-                {/* Empty State */}
-                {visibleEntries.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-16 space-y-6 text-center">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-primary-500/20 rounded-full blur-2xl animate-pulse" />
-                            <div className="relative p-6 rounded-2xl bg-gradient-to-br from-primary-500/10 to-accent-500/10 border border-primary-500/20">
-                                <Target className="w-12 h-12 text-primary-400" />
-                            </div>
-                        </div>
-                        <div className="space-y-2 max-w-sm">
-                            <h3 className="text-xl font-semibold">Ready to grow?</h3>
-                            <p className="text-muted-foreground">
-                                Capture your first learning, reflection, or motivation for today.
-                                Every small step counts! 🚀
+                        <div>
+                            <h3 className="text-lg font-semibold">No entries yet</h3>
+                            <p className="text-muted-foreground text-sm mt-1">
+                                Start tracking your habits and progress today!
                             </p>
                         </div>
-                        <Button onClick={() => setIsFormOpen(true)} size="lg">
-                            <Zap className="w-4 h-4 mr-2" />
-                            Create First Entry
-                        </Button>
                     </div>
                 )}
             </div>
 
             {/* Add Entry Dialog */}
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-md bg-card border-border">
                     <DialogHeader>
                         <DialogTitle className="text-xl">New Entry</DialogTitle>
                         <DialogDescription>
-                            What did you learn or accomplish today?
+                            What did you accomplish today?
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-6 py-4">
+                    <div className="space-y-5 py-4">
                         {/* Category Selection */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-medium text-foreground">Category</label>
+                        <div className="space-y-2">
+                            <label className="text-sm text-muted-foreground">Category</label>
                             <div className="grid grid-cols-3 gap-2">
                                 {CATEGORIES.map((cat) => (
                                     <button
@@ -209,14 +176,14 @@ export function TodayView() {
                                         type="button"
                                         onClick={() => setCategory(cat)}
                                         className={cn(
-                                            "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all",
+                                            "flex flex-col items-center gap-2 p-3 rounded-xl transition-all",
                                             category === cat
-                                                ? "border-primary-500 bg-primary-500/10"
-                                                : "border-border hover:border-muted-foreground/30 hover:bg-muted"
+                                                ? cn(CATEGORY_COLORS[cat], "text-white")
+                                                : "bg-muted/50 hover:bg-muted text-foreground"
                                         )}
                                     >
                                         <span className="text-2xl">{CATEGORY_CONFIG[cat].emoji}</span>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-[10px] font-medium">
                                             {CATEGORY_CONFIG[cat].label}
                                         </span>
                                     </button>
@@ -225,24 +192,20 @@ export function TodayView() {
                         </div>
 
                         {/* Content */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-medium text-foreground">
-                                What's on your mind?
-                            </label>
+                        <div className="space-y-2">
+                            <label className="text-sm text-muted-foreground">Details</label>
                             <Textarea
-                                placeholder="Share your thoughts, learnings, or reflections..."
+                                placeholder="Describe what you did..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
-                                rows={4}
-                                className="resize-none"
+                                rows={3}
+                                className="bg-muted/50 border-border focus:border-primary-500"
                             />
                         </div>
 
                         {/* Mood Selection */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-medium text-foreground">
-                                How are you feeling?
-                            </label>
+                        <div className="space-y-2">
+                            <label className="text-sm text-muted-foreground">Mood</label>
                             <div className="flex gap-2">
                                 {MOODS.map((m) => (
                                     <button
@@ -250,13 +213,13 @@ export function TodayView() {
                                         type="button"
                                         onClick={() => setMood(m)}
                                         className={cn(
-                                            "flex-1 flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all",
+                                            "flex-1 p-3 rounded-xl text-2xl transition-all",
                                             mood === m
-                                                ? "border-primary-500 bg-primary-500/10 scale-105"
-                                                : "border-border hover:border-muted-foreground/30 hover:bg-muted"
+                                                ? "bg-primary-500 scale-110"
+                                                : "bg-muted/50 hover:bg-muted"
                                         )}
                                     >
-                                        <span className="text-2xl">{MOOD_CONFIG[m].emoji}</span>
+                                        {MOOD_CONFIG[m].emoji}
                                     </button>
                                 ))}
                             </div>
@@ -264,15 +227,12 @@ export function TodayView() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3 pt-4 border-t border-border">
-                        <Button
-                            variant="ghost"
-                            className="flex-1"
-                            onClick={() => setIsFormOpen(false)}
-                        >
+                    <div className="flex gap-3">
+                        <Button variant="ghost" className="flex-1" onClick={() => setIsFormOpen(false)}>
                             Cancel
                         </Button>
                         <Button
+                            variant="default"
                             className="flex-1"
                             onClick={handleSubmit}
                             isLoading={isSubmitting}
@@ -286,7 +246,7 @@ export function TodayView() {
 
             {/* View Entry Dialog */}
             <Dialog open={!!selectedEntry} onOpenChange={() => setSelectedEntry(null)}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md bg-card border-border">
                     {(() => {
                         const entry = todayEntries.find((e) => e.id === selectedEntry);
                         if (!entry) return null;
@@ -295,27 +255,24 @@ export function TodayView() {
                             <>
                                 <DialogHeader>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-2xl">{CATEGORY_CONFIG[entry.category].emoji}</span>
-                                        <span className="text-xl">{MOOD_CONFIG[entry.mood].emoji}</span>
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-full flex items-center justify-center text-lg",
+                                            CATEGORY_COLORS[entry.category]
+                                        )}>
+                                            {CATEGORY_CONFIG[entry.category].emoji}
+                                        </div>
+                                        <div>
+                                            <DialogTitle>{CATEGORY_CONFIG[entry.category].label}</DialogTitle>
+                                            <p className="text-sm text-muted-foreground">
+                                                {getMoodEmoji(entry.mood)} {MOOD_CONFIG[entry.mood].label}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <DialogTitle>{entry.title || "Entry Details"}</DialogTitle>
                                 </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                    <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                <div className="py-4">
+                                    <p className="text-foreground whitespace-pre-wrap">
                                         {entry.content}
                                     </p>
-                                    {entry.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {entry.tags.map((tag) => (
-                                                <span
-                                                    key={tag}
-                                                    className="px-2 py-1 text-sm rounded-full bg-muted text-muted-foreground"
-                                                >
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
                                 </div>
                             </>
                         );
@@ -324,4 +281,8 @@ export function TodayView() {
             </Dialog>
         </div>
     );
+}
+
+function getMoodEmoji(mood: Mood): string {
+    return MOOD_CONFIG[mood]?.emoji || "😊";
 }

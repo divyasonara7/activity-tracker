@@ -1,62 +1,45 @@
 @import "tailwindcss";
 
 /* ============================================
-   Premium Design System for Daily Growth Tracker
-   Dark-first, engaging, motivational design
+   Habitify-Inspired Design System
+   Features: Progress rings, vibrant colors, clean cards
    ============================================ */
 
 @theme {
-    /* Primary - Vibrant Indigo/Purple gradient */
-    --color-primary-50: #eef2ff;
-    --color-primary-100: #e0e7ff;
-    --color-primary-200: #c7d2fe;
-    --color-primary-300: #a5b4fc;
-    --color-primary-400: #818cf8;
-    --color-primary-500: #6366f1;
-    --color-primary-600: #4f46e5;
-    --color-primary-700: #4338ca;
-    --color-primary-800: #3730a3;
-    --color-primary-900: #312e81;
+    /* Dark theme base - Similar to Habitify */
+    --color-background: #1a1a2e;
+    --color-foreground: #ffffff;
+    --color-card: #16213e;
+    --color-card-hover: #1f2b47;
+    --color-muted: #0f3460;
+    --color-muted-foreground: #94a3b8;
+    --color-border: #233554;
+    --color-border-hover: #2d4a6f;
 
-    /* Accent - Energetic Orange/Amber for streaks */
-    --color-accent-400: #fb923c;
-    --color-accent-500: #f97316;
-    --color-accent-600: #ea580c;
+    /* Primary - Habitify uses vibrant blue/purple */
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
 
-    /* Success - Fresh Green for achievements */
-    --color-success-400: #4ade80;
-    --color-success-500: #22c55e;
-    --color-success-600: #16a34a;
+    /* Vibrant Habit Colors */
+    --color-habit-blue: #3b82f6;
+    --color-habit-purple: #8b5cf6;
+    --color-habit-pink: #ec4899;
+    --color-habit-red: #ef4444;
+    --color-habit-orange: #f97316;
+    --color-habit-yellow: #eab308;
+    --color-habit-green: #22c55e;
+    --color-habit-teal: #14b8a6;
 
-    /* Category Colors - Vibrant & Distinct */
-    --color-learning: #818cf8;
-    --color-exercise: #34d399;
-    --color-motivation: #fbbf24;
-    --color-reflection: #f472b6;
-
-    /* Mood Colors */
-    --color-mood-fire: #ef4444;
-    --color-mood-happy: #22c55e;
-    --color-mood-neutral: #94a3b8;
-    --color-mood-sad: #6366f1;
-
-    /* Dark Theme (Default) */
-    --color-background: #09090b;
-    --color-foreground: #fafafa;
-    --color-card: #18181b;
-    --color-card-foreground: #fafafa;
-    --color-popover: #18181b;
-    --color-popover-foreground: #fafafa;
-    --color-muted: #27272a;
-    --color-muted-foreground: #a1a1aa;
-    --color-border: #27272a;
-    --color-input: #27272a;
-    --color-ring: #6366f1;
+    /* Success/Streak colors */
+    --color-success: #22c55e;
+    --color-streak: #f97316;
 
     /* Radius */
-    --radius-lg: 0.75rem;
-    --radius-md: 0.5rem;
-    --radius-sm: 0.25rem;
+    --radius-lg: 1rem;
+    --radius-md: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-full: 9999px;
 }
 
 /* ============================================
@@ -67,152 +50,127 @@
     @apply border-border;
 }
 
-html {
-    @apply scroll-smooth;
-}
-
 body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ============================================
-   Custom Utility Classes
+   Progress Ring Component
    ============================================ */
 
-.gradient-primary {
-    @apply bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700;
+.progress-ring {
+    transform: rotate(-90deg);
 }
 
-.gradient-accent {
-    @apply bg-gradient-to-r from-accent-400 to-accent-600;
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease-out;
 }
 
-.gradient-success {
-    @apply bg-gradient-to-r from-success-400 to-success-600;
+/* ============================================
+   Habit Card Styles
+   ============================================ */
+
+.habit-card {
+    @apply bg-card rounded-xl p-4 transition-all duration-200;
+    @apply hover:bg-card-hover;
+    @apply border border-border/50;
 }
 
-.glass {
-    @apply bg-card/80 backdrop-blur-lg border border-border/50;
+.habit-card-completed {
+    @apply opacity-70;
 }
 
-.glass-hover {
-    @apply hover:bg-card/90 hover:border-border transition-all duration-200;
-}
-
-/* Streak fire glow effect */
-.fire-glow {
-    filter: drop-shadow(0 0 8px rgb(239 68 68 / 0.5));
-    animation: pulse-fire 2s ease-in-out infinite;
-}
-
-@keyframes pulse-fire {
-
-    0%,
-    100% {
-        filter: drop-shadow(0 0 8px rgb(239 68 68 / 0.5));
-        transform: scale(1);
+/* Checkmark animation */
+@keyframes check {
+    0% {
+        transform: scale(0);
     }
 
     50% {
-        filter: drop-shadow(0 0 16px rgb(251 146 60 / 0.7));
-        transform: scale(1.1);
-    }
-}
-
-/* Celebration confetti animation */
-@keyframes confetti {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
+        transform: scale(1.2);
     }
 
     100% {
-        transform: translateY(-100vh) rotate(720deg);
-        opacity: 0;
-    }
-}
-
-.animate-confetti {
-    animation: confetti 3s ease-out forwards;
-}
-
-/* Floating animation for cards */
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-.animate-float {
-    animation: float 4s ease-in-out infinite;
-}
-
-/* Slide up animation */
-@keyframes slide-up {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-slide-up {
-    animation: slide-up 0.4s ease-out forwards;
-}
-
-/* Scale in animation */
-@keyframes scale-in {
-    0% {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-
-    100% {
-        opacity: 1;
         transform: scale(1);
     }
 }
 
-.animate-scale-in {
-    animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+.animate-check {
+    animation: check 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
-/* Progress ring animation */
-@keyframes progress-ring {
-    0% {
-        stroke-dashoffset: 283;
-    }
-}
+/* ============================================
+   Streak Fire Animation
+   ============================================ */
 
-/* Shimmer loading effect */
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
+@keyframes flame {
 
+    0%,
     100% {
-        background-position: 200% 0;
+        transform: scaleY(1) scaleX(1);
+        filter: brightness(1);
+    }
+
+    25% {
+        transform: scaleY(1.1) scaleX(0.95);
+        filter: brightness(1.1);
+    }
+
+    50% {
+        transform: scaleY(1.05) scaleX(1.02);
+        filter: brightness(1.05);
+    }
+
+    75% {
+        transform: scaleY(1.08) scaleX(0.98);
+        filter: brightness(1.08);
     }
 }
 
-.shimmer {
-    background: linear-gradient(90deg,
-            rgb(39 39 42) 25%,
-            rgb(63 63 70) 50%,
-            rgb(39 39 42) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+.animate-flame {
+    animation: flame 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   Smooth Fade Animations
+   ============================================ */
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-up {
+    animation: fade-up 0.4s ease-out forwards;
+}
+
+/* Stagger delays */
+.delay-1 {
+    animation-delay: 50ms;
+}
+
+.delay-2 {
+    animation-delay: 100ms;
+}
+
+.delay-3 {
+    animation-delay: 150ms;
+}
+
+.delay-4 {
+    animation-delay: 200ms;
+}
+
+.delay-5 {
+    animation-delay: 250ms;
 }
 
 /* ============================================
@@ -224,20 +182,19 @@ body {
 }
 
 /* ============================================
-   Scrollbar Styling
+   Custom Scrollbar
    ============================================ */
 
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-muted rounded-full;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
+    @apply bg-muted rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
