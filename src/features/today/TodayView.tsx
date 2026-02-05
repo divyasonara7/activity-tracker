@@ -3,10 +3,11 @@ import { useAppStore } from "@/stores/appStore";
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Textarea } from "@/components/ui";
 import { HabitCard } from "@/components/sticky-notes/StickyNote";
 import { DailyProgress, StreakCounter } from "@/components/dashboard/StreakCard";
-import { getRelativeDay } from "@/utils/dates";
+import { getRelativeDay, formatShortDate } from "@/utils/dates";
 import { CATEGORY_CONFIG, MOOD_CONFIG } from "@/utils/constants";
+import { getRecallSuggestions, getEncouragingMessage, type RecallSuggestion } from "@/lib/motivation-engine";
 import type { EntryCategory, Mood } from "@/types";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles, Quote, RefreshCw, Lightbulb, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ============================================
@@ -42,10 +43,15 @@ export function TodayView() {
     const [mood, setMood] = useState<Mood>("happy");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Daily Inspiration state
+    const [inspiration, setInspiration] = useState<RecallSuggestion | null>(null);
+    const [isLoadingInspiration, setIsLoadingInspiration] = useState(false);
+
     const {
         todayEntries,
         streaks,
         isLoading,
+        user,
         addEntry,
         togglePin,
         loadTodayEntries,
@@ -55,8 +61,45 @@ export function TodayView() {
         loadTodayEntries();
     }, [loadTodayEntries]);
 
+    // Load daily inspiration
+    useEffect(() => {
+        async function loadInspiration() {
+            if (!user?.id) return;
+            setIsLoadingInspiration(true);
+            try {
+                const suggestions = await getRecallSuggestions(user.id, 1);
+                if (suggestions.length > 0) {
+                    setInspiration(suggestions[0]);
+                }
+            } catch (error) {
+                console.error("Failed to load inspiration:", error);
+            } finally {
+                setIsLoadingInspiration(false);
+            }
+        }
+        loadInspiration();
+    }, [user?.id]);
+
+    // Refresh inspiration
+    const refreshInspiration = async () => {
+        if (!user?.id) return;
+        setIsLoadingInspiration(true);
+        try {
+            const suggestions = await getRecallSuggestions(user.id, 3);
+            // Pick a different one if possible
+            const different = suggestions.find(s => s.entry.id !== inspiration?.entry.id);
+            setInspiration(different || suggestions[0] || null);
+        } catch (error) {
+            console.error("Failed to refresh inspiration:", error);
+        } finally {
+            setIsLoadingInspiration(false);
+        }
+    };
+
     const overallStreak = streaks.find((s) => s.type === "overall");
+    const longestStreak = overallStreak?.longestCount || 0;
     const currentStreakCount = overallStreak?.currentCount || 0;
+    const encouragingMessage = getEncouragingMessage(currentStreakCount, longestStreak);
 
     const handleSubmit = async () => {
         if (!content.trim()) return;
@@ -122,6 +165,63 @@ export function TodayView() {
                 <Plus className="w-5 h-5" />
                 <span>Add New Entry</span>
             </Button>
+
+            {/* Daily Inspiration */}
+            {(inspiration || encouragingMessage) && (
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500/10 via-card to-habit-purple/10 border border-primary-500/20 p-4">
+                    {/* Decorative elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-2xl" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-habit-purple/5 rounded-full blur-xl" />
+
+                    <div className="relative">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center">
+                                    <Lightbulb className="w-4 h-4 text-primary-400" />
+                                </div>
+                                <span className="text-sm font-medium text-primary-400">Daily Inspiration</span>
+                            </div>
+                            {inspiration && (
+                                <button
+                                    onClick={refreshInspiration}
+                                    disabled={isLoadingInspiration}
+                                    className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                                    title="Get another inspiration"
+                                >
+                                    <RefreshCw className={cn(
+                                        "w-4 h-4 text-muted-foreground",
+                                        isLoadingInspiration && "animate-spin"
+                                    )} />
+                                </button>
+                            )}
+                        </div>
+
+                        {inspiration ? (
+                            <div className="space-y-3">
+                                {/* Quote content */}
+                                <div className="flex gap-3">
+                                    <Quote className="w-5 h-5 text-primary-400/50 flex-shrink-0 mt-0.5" />
+                                    <p className="text-foreground leading-relaxed">
+                                        {inspiration.entry.content}
+                                    </p>
+                                </div>
+
+                                {/* Metadata */}
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1">
+                                        <Heart className="w-3 h-3" />
+                                        {inspiration.reason}
+                                    </span>
+                                    <span>•</span>
+                                    <span>{formatShortDate(inspiration.entry.date)}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="text-foreground">{encouragingMessage}</p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Entries List */}
             <div className="space-y-3">
