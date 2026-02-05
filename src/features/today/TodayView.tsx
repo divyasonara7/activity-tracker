@@ -169,9 +169,9 @@ export function TodayView() {
 
             {/* Add Entry Dialog */}
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <DialogContent className="sm:max-w-md bg-card border-border">
+                <DialogContent className="sm:max-w-md bg-card border-border" style={{ fontFamily: 'system-ui, sans-serif' }}>
                     <DialogHeader>
-                        <DialogTitle className="text-xl">New Entry</DialogTitle>
+                        <DialogTitle className="text-xl font-bold">✏️ New Entry</DialogTitle>
                         <DialogDescription>
                             What did you accomplish today?
                         </DialogDescription>
@@ -180,7 +180,7 @@ export function TodayView() {
                     <div className="space-y-5 py-4">
                         {/* Category Selection */}
                         <div className="space-y-2">
-                            <label className="text-sm text-muted-foreground">Category</label>
+                            <label className="text-sm font-medium text-muted-foreground">Category</label>
                             <div className="grid grid-cols-3 gap-2">
                                 {CATEGORIES.map((cat) => (
                                     <button
@@ -188,10 +188,10 @@ export function TodayView() {
                                         type="button"
                                         onClick={() => setCategory(cat)}
                                         className={cn(
-                                            "flex flex-col items-center gap-2 p-3 rounded-xl transition-all",
+                                            "flex flex-col items-center gap-2 p-3 rounded-xl transition-all border-2",
                                             category === cat
-                                                ? cn(CATEGORY_COLORS[cat], "text-white")
-                                                : "bg-muted/50 hover:bg-muted text-foreground"
+                                                ? cn(CATEGORY_COLORS[cat], "text-white border-transparent")
+                                                : "bg-muted/30 hover:bg-muted/50 text-foreground border-transparent hover:border-muted-foreground/30"
                                         )}
                                     >
                                         <span className="text-2xl">{CATEGORY_CONFIG[cat].emoji}</span>
@@ -205,19 +205,20 @@ export function TodayView() {
 
                         {/* Content */}
                         <div className="space-y-2">
-                            <label className="text-sm text-muted-foreground">Details</label>
+                            <label className="text-sm font-medium text-muted-foreground">What did you do?</label>
                             <Textarea
-                                placeholder="Describe what you did..."
+                                placeholder="Describe your activity, learning, or reflection..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
-                                rows={3}
-                                className="bg-muted/50 border-border focus:border-primary-500"
+                                rows={4}
+                                className="bg-muted/30 border-border focus:border-primary-500 resize-none"
+                                style={{ fontFamily: 'system-ui, sans-serif' }}
                             />
                         </div>
 
                         {/* Mood Selection */}
                         <div className="space-y-2">
-                            <label className="text-sm text-muted-foreground">Mood</label>
+                            <label className="text-sm font-medium text-muted-foreground">How did it feel?</label>
                             <div className="flex gap-2">
                                 {MOODS.map((m) => (
                                     <button
@@ -225,13 +226,16 @@ export function TodayView() {
                                         type="button"
                                         onClick={() => setMood(m)}
                                         className={cn(
-                                            "flex-1 p-3 rounded-xl text-2xl transition-all",
+                                            "flex-1 flex flex-col items-center gap-1 p-3 rounded-xl text-2xl transition-all border-2",
                                             mood === m
-                                                ? "bg-primary-500 scale-110"
-                                                : "bg-muted/50 hover:bg-muted"
+                                                ? "bg-primary-500/20 border-primary-500 scale-105"
+                                                : "bg-muted/30 border-transparent hover:bg-muted/50"
                                         )}
                                     >
-                                        {MOOD_CONFIG[m].emoji}
+                                        <span>{MOOD_CONFIG[m].emoji}</span>
+                                        <span className="text-[10px] font-medium text-muted-foreground">
+                                            {MOOD_CONFIG[m].label}
+                                        </span>
                                     </button>
                                 ))}
                             </div>
@@ -250,7 +254,7 @@ export function TodayView() {
                             isLoading={isSubmitting}
                             disabled={!content.trim()}
                         >
-                            Save Entry
+                            💾 Save Entry
                         </Button>
                     </div>
                 </DialogContent>
@@ -258,7 +262,7 @@ export function TodayView() {
 
             {/* View Entry Dialog */}
             <Dialog open={!!selectedEntry} onOpenChange={() => setSelectedEntry(null)}>
-                <DialogContent className="sm:max-w-md bg-card border-border">
+                <DialogContent className="sm:max-w-md bg-card border-border" style={{ fontFamily: 'system-ui, sans-serif' }}>
                     {(() => {
                         const entry = todayEntries.find((e) => e.id === selectedEntry);
                         if (!entry) return null;
@@ -266,9 +270,9 @@ export function TodayView() {
                         return (
                             <>
                                 <DialogHeader>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3">
                                         <div className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center text-lg",
+                                            "w-12 h-12 rounded-xl flex items-center justify-center text-2xl",
                                             CATEGORY_COLORS[entry.category]
                                         )}>
                                             {CATEGORY_CONFIG[entry.category].emoji}
@@ -282,7 +286,7 @@ export function TodayView() {
                                     </div>
                                 </DialogHeader>
                                 <div className="py-4">
-                                    <p className="text-foreground whitespace-pre-wrap">
+                                    <p className="text-foreground whitespace-pre-wrap leading-relaxed">
                                         {entry.content}
                                     </p>
                                 </div>

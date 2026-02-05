@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Calendar, ClipboardList, LayoutDashboard, Target, Home } from "lucide-react";
+import { Calendar, ClipboardList, LayoutDashboard, Target, Home, Quote } from "lucide-react";
 
 interface LayoutProps {
     children: ReactNode;
@@ -9,6 +9,7 @@ interface LayoutProps {
 
 const NAV_ITEMS = [
     { path: "/", label: "Today", icon: Home },
+    { path: "/quotes", label: "Quotes", icon: Quote },
     { path: "/calendar", label: "Calendar", icon: Calendar },
     { path: "/notes", label: "History", icon: ClipboardList },
     { path: "/dashboard", label: "Stats", icon: LayoutDashboard },

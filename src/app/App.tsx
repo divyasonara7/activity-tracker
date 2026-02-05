@@ -7,6 +7,7 @@ import { CalendarView } from "@/features/calendar";
 import { NotesBoardView } from "@/features/notes-board";
 import { DashboardView } from "@/features/dashboard";
 import { GoalsView } from "@/features/goals";
+import { QuotesView } from "@/features/quotes";
 import "@/styles/globals.css";
 
 export function App() {
@@ -21,6 +22,7 @@ export function App() {
             <Layout>
                 <Routes>
                     <Route path="/" element={<TodayView />} />
+                    <Route path="/quotes" element={<QuotesView />} />
                     <Route path="/calendar" element={<CalendarView />} />
                     <Route path="/notes" element={<NotesBoardView />} />
                     <Route path="/dashboard" element={<DashboardView />} />
