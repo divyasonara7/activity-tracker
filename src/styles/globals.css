@@ -1,45 +1,71 @@
 @import "tailwindcss";
 
 /* ============================================
-   Habitify-Inspired Design System
-   Features: Progress rings, vibrant colors, clean cards
+   Vision Board / Sticky Notes Design System
+   Warm, colorful, handwritten feel
    ============================================ */
 
 @theme {
-    /* Dark theme base - Similar to Habitify */
-    --color-background: #1a1a2e;
-    --color-foreground: #ffffff;
-    --color-card: #16213e;
-    --color-card-hover: #1f2b47;
-    --color-muted: #0f3460;
-    --color-muted-foreground: #94a3b8;
-    --color-border: #233554;
-    --color-border-hover: #2d4a6f;
+    /* Warm, inviting dark theme - like a cozy desk at night */
+    --color-background: #1c1917;
+    --color-foreground: #fafaf9;
+    --color-card: #292524;
+    --color-card-hover: #3c3836;
+    --color-muted: #44403c;
+    --color-muted-foreground: #a8a29e;
+    --color-border: #57534e;
+    --color-border-hover: #78716c;
 
-    /* Primary - Habitify uses vibrant blue/purple */
-    --color-primary-400: #60a5fa;
-    --color-primary-500: #3b82f6;
-    --color-primary-600: #2563eb;
+    /* Warm accent colors */
+    --color-primary-400: #fbbf24;
+    --color-primary-500: #f59e0b;
+    --color-primary-600: #d97706;
 
-    /* Vibrant Habit Colors */
-    --color-habit-blue: #3b82f6;
-    --color-habit-purple: #8b5cf6;
-    --color-habit-pink: #ec4899;
-    --color-habit-red: #ef4444;
-    --color-habit-orange: #f97316;
-    --color-habit-yellow: #eab308;
-    --color-habit-green: #22c55e;
-    --color-habit-teal: #14b8a6;
+    /* Vibrant Sticky Note Colors - like real Post-its */
+    --color-sticky-yellow: #fef08a;
+    --color-sticky-pink: #fda4af;
+    --color-sticky-blue: #93c5fd;
+    --color-sticky-green: #86efac;
+    --color-sticky-purple: #c4b5fd;
+    --color-sticky-orange: #fed7aa;
+    --color-sticky-coral: #fecaca;
+    --color-sticky-mint: #a7f3d0;
+
+    /* Habit Colors - Rich and vivid */
+    --color-habit-blue: #60a5fa;
+    --color-habit-purple: #a78bfa;
+    --color-habit-pink: #f472b6;
+    --color-habit-red: #f87171;
+    --color-habit-orange: #fb923c;
+    --color-habit-yellow: #facc15;
+    --color-habit-green: #4ade80;
+    --color-habit-teal: #2dd4bf;
 
     /* Success/Streak colors */
-    --color-success: #22c55e;
-    --color-streak: #f97316;
+    --color-success: #4ade80;
+    --color-streak: #fb923c;
 
     /* Radius */
     --radius-lg: 1rem;
     --radius-md: 0.75rem;
     --radius-sm: 0.5rem;
     --radius-full: 9999px;
+}
+
+/* ============================================
+   Font Families
+   ============================================ */
+
+.font-handwriting {
+    font-family: 'Caveat', 'Shadows Into Light', cursive;
+}
+
+.font-handwriting-alt {
+    font-family: 'Patrick Hand', 'Kalam', cursive;
+}
+
+.font-sketch {
+    font-family: 'Indie Flower', 'Shadows Into Light', cursive;
 }
 
 /* ============================================
@@ -52,7 +78,150 @@
 
 body {
     @apply bg-background text-foreground antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Patrick Hand', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-image:
+        radial-gradient(ellipse at top, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+}
+
+/* ============================================
+   Cork Board Background
+   ============================================ */
+
+.cork-board {
+    background-color: #44403c;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* ============================================
+   Sticky Note Styles
+   ============================================ */
+
+.sticky-note {
+    position: relative;
+    padding: 1rem;
+    border-radius: 2px;
+    box-shadow:
+        2px 3px 8px rgba(0, 0, 0, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2);
+    transform-origin: center top;
+    transition: all 0.2s ease;
+}
+
+.sticky-note:hover {
+    transform: translateY(-2px) rotate(0deg) !important;
+    box-shadow:
+        4px 6px 16px rgba(0, 0, 0, 0.35),
+        0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Slight rotation for natural look */
+.sticky-note:nth-child(odd) {
+    transform: rotate(-1deg);
+}
+
+.sticky-note:nth-child(even) {
+    transform: rotate(1deg);
+}
+
+.sticky-note:nth-child(3n) {
+    transform: rotate(-0.5deg);
+}
+
+/* Paper texture overlay */
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%,
+            rgba(0, 0, 0, 0.05) 100%);
+    pointer-events: none;
+}
+
+/* Tape effect at top */
+.sticky-note-tape::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+/* Sticky note colors */
+.sticky-yellow {
+    background: linear-gradient(150deg, #fef9c3 0%, #fef08a 100%);
+    color: #78716c;
+}
+
+.sticky-pink {
+    background: linear-gradient(150deg, #fce7f3 0%, #fda4af 100%);
+    color: #9f1239;
+}
+
+.sticky-blue {
+    background: linear-gradient(150deg, #dbeafe 0%, #93c5fd 100%);
+    color: #1e40af;
+}
+
+.sticky-green {
+    background: linear-gradient(150deg, #dcfce7 0%, #86efac 100%);
+    color: #166534;
+}
+
+.sticky-purple {
+    background: linear-gradient(150deg, #ede9fe 0%, #c4b5fd 100%);
+    color: #5b21b6;
+}
+
+.sticky-orange {
+    background: linear-gradient(150deg, #ffedd5 0%, #fed7aa 100%);
+    color: #c2410c;
+}
+
+/* ============================================
+   Quote Card Styles
+   ============================================ */
+
+.quote-card {
+    position: relative;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+    border-radius: 4px;
+    box-shadow:
+        3px 4px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    color: #78350f;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    transform: rotate(-0.5deg);
+}
+
+.quote-card::before {
+    content: '"';
+    position: absolute;
+    top: 0.5rem;
+    left: 0.75rem;
+    font-size: 3rem;
+    opacity: 0.2;
+    font-family: Georgia, serif;
+}
+
+.quote-author {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1rem;
+    opacity: 0.7;
+    margin-top: 0.75rem;
 }
 
 /* ============================================
@@ -68,17 +237,26 @@ body {
 }
 
 /* ============================================
-   Habit Card Styles
+   Habit Card Styles - Sticky Note Version
    ============================================ */
 
 .habit-card {
-    @apply bg-card rounded-xl p-4 transition-all duration-200;
-    @apply hover:bg-card-hover;
-    @apply border border-border/50;
+    @apply rounded-sm p-4 transition-all duration-200;
+    font-family: 'Patrick Hand', cursive;
+    box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.habit-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+        3px 4px 12px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .habit-card-completed {
-    @apply opacity-70;
+    @apply opacity-80;
 }
 
 /* Checkmark animation */
@@ -174,6 +352,37 @@ body {
 }
 
 /* ============================================
+   Handwriting Style Text
+   ============================================ */
+
+.text-handwriting {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+}
+
+.text-handwriting-sm {
+    font-family: 'Patrick Hand', cursive;
+}
+
+/* ============================================
+   Pin/Pushpin Effect
+   ============================================ */
+
+.pushpin {
+    position: relative;
+}
+
+.pushpin::before {
+    content: '📌';
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    font-size: 1.25rem;
+    transform: rotate(30deg);
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* ============================================
    Focus States
    ============================================ */
 
@@ -186,7 +395,7 @@ body {
    ============================================ */
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -199,4 +408,25 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
+}
+
+/* ============================================
+   Decorative Elements
+   ============================================ */
+
+.doodle-underline {
+    position: relative;
+}
+
+.doodle-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: currentColor;
+    opacity: 0.3;
+    border-radius: 2px;
+    transform: rotate(-1deg);
 }
