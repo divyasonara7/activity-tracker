@@ -1,0 +1,276 @@
+/* ============================================
+   Dashboard View Styles
+   ============================================ */
+
+.container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+}
+
+/* Header */
+.header {
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .statsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Stat Card */
+.statCard {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.statCardIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.statCardValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-foreground);
+}
+
+@media (min-width: 768px) {
+    .statCardValue {
+        font-size: 2rem;
+    }
+}
+
+.statCardLabel {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Charts Grid */
+.chartsGrid {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .chartsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Chart Card */
+.chartCard {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .chartCard {
+        padding: 1.5rem;
+    }
+}
+
+.chartCardFull {
+    grid-column: 1;
+}
+
+@media (min-width: 768px) {
+    .chartCardFull {
+        grid-column: span 2;
+    }
+}
+
+.chartTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    margin-bottom: 1rem;
+}
+
+.chartContainer {
+    width: 100%;
+    height: 200px;
+}
+
+@media (min-width: 768px) {
+    .chartContainer {
+        height: 250px;
+    }
+}
+
+.chartContainerLarge {
+    height: 150px;
+}
+
+@media (min-width: 768px) {
+    .chartContainerLarge {
+        height: 180px;
+    }
+}
+
+/* Heatmap */
+.heatmapContainer {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.heatmapGrid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    min-width: 400px;
+}
+
+.heatmapWeekLabel {
+    font-size: 0.625rem;
+    color: var(--color-muted-foreground);
+    text-align: center;
+    padding-bottom: 0.25rem;
+}
+
+.heatmapCell {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+.heatmapCell:hover {
+    transform: scale(1.2);
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+}
+
+.legendDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+/* Weekly Comparison */
+.weeklyComparison {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.trendUp {
+    color: var(--color-success);
+}
+
+.trendDown {
+    color: var(--color-habit-red);
+}
+
+.trendStable {
+    color: var(--color-muted-foreground);
+}
+
+.trendLabel {
+    font-size: 0.75rem;
+}
+
+/* Empty State */
+.emptyState {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.emptyStateIcon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    background: var(--color-muted);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyStateTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.emptyStateText {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Loading */
+.loadingSkeleton {
+    background: var(--color-muted);
+    border-radius: 0.5rem;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
